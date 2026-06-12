@@ -22,7 +22,9 @@ public class spawn:MonoBehaviour
     public List<JsonData> jsonDatas = new List<JsonData>();
     public float minPos;
     public float maxPos;
-    public Toggle[] toggle;
+    public List<Toggle> toggles;
+    public GameObject togglePrefab;
+    public Transform content;
 
     public void SpawnObject(Transform koor, GameObject obect)
     {
@@ -31,7 +33,6 @@ public class spawn:MonoBehaviour
             koor.position,
             koor.rotation
         );
-        
         musornyeObjects.Add( spawnedCube);
         SaveData saveData = new SaveData();
         saveData.objects = jsonDatas;
@@ -54,11 +55,16 @@ public class spawn:MonoBehaviour
                 var rand = Random.Range(0, tch[i].objects.Length+1);
                 bool norms = false;
                 if (rand == 1) norms = true;
-                
+                GameObject obj = Instantiate(togglePrefab, content);
+
+                Toggle toggle = obj.GetComponent<Toggle>();
+
+                toggles.Add(toggle);
                 if (rand >= tch[i].objects.Length) { 
                     jsonDatas.Add(new JsonData { name = tch[i].objects[0].name, norm = norms });
                     continue;
                 }
+
                 jsonDatas.Add(new JsonData { name = tch[i].objects[rand].name, norm = norms });
                 SpawnObject(tch[i].koor[j].transform, tch[i].objects[rand]);
                 
@@ -116,9 +122,9 @@ public class spawn:MonoBehaviour
 
     public void OnButtonClickResult()
     {
-        for (int i = 0; i < toggle.Length; i++)
+        for (int i = 0; i < toggles.Count; i++)
         {
-            if(jsonDatas[i].norm != toggle[i].isOn) Debug.Log("Ne Pravilno");
+            if(jsonDatas[i].norm != toggles[i].isOn) Debug.Log("Ne Pravilno");
         }
     }
     private void Update()
